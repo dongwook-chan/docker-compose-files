@@ -1,0 +1,56 @@
+# Use root/example as user/password credentials
+version: '3.9'
+
+x-volumes: &volumes
+  type: bind
+  source: /bind mount source not specified  # ERROR MESSAGE
+  target: /var/lib/mysql
+
+x-mysql: &mysql
+  image: mysql
+  command: --default-authentication-plugin=mysql_native_password
+  ports:
+    - port mapping required  # ERROR MESSAGE
+  volumes:
+    - bind mount not configured  # ERROR MESSAGE
+  # restart: always
+  environment:
+    MYSQL_ROOT_PASSWORD: test
+
+x-mariadb: &mariadb
+  <<: *mysql
+  image: mariadb
+
+&image-name-x x-mysql-service:
+  <<: *mysql
+  ports:
+    - XXXX:3306
+  volumes:
+    - <<: *volumes
+      source: /bind mount source not specified  # ERROR MESSAGE
+
+&image-name-y x-mariadb-service:
+  <<: *mariadb
+  ports:
+    - XXXX:3306
+  volumes:
+    - <<: *volumes
+      source: /bind mount source not specified  # ERROR MESSAGE
+
+services:
+  &image-name-1 pymyrepl-mysql:
+    <<: *mysql
+    ports:
+      - 3307:3306
+    volumes:
+      - <<: *volumes
+        source: *image-name-1
+
+  &image-name-2 pymyrepl-mariadb:
+    <<: *mariadb
+    ports:
+      - 3308:3306
+    volumes:
+      - <<: *volumes
+        source: *image-name-2
+
