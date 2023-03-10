@@ -20,6 +20,9 @@ x-mysql: &mysql
 x-mariadb: &mariadb
   <<: *mysql
   image: mariadb
+  command: --log-bin # for binary logging
+  environment:
+    MARIADB_ROOT_PASSWORD: test
 
 &image-name-x x-mysql-service:
   <<: *mysql
