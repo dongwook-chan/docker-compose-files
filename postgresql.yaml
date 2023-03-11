@@ -1,0 +1,21 @@
+version: '3.1'
+
+services:
+  &image-name-0 test-postgres:
+    image: postgres
+    container_name: *image-name-0
+    # restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - type: bind
+        source: *image-name-0 
+        target: /var/lib/postgresql/data
+    networks:
+      - postgresql
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: test
+
+networks:
+  postgresql:
