@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  &image-name-0 scrapecomm-mongo:
+    image: mongo
+      #restart: always
+    container_name: *image-name-0
+    ports:
+      - 27017:27017
+    volumes:
+      - type: bind
+        source: *image-name-0
+        target: /data/db
+    networks:
+      - mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: test
+
+networks:
+  mongodb:
