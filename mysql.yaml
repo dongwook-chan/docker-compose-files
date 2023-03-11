@@ -1,6 +1,12 @@
 # Use root/example as user/password credentials
 version: '3.9'
 
+# Prerequisites
+#   Target dir for bind mounts
+#     mkdir {project home}/volumes/{volume name per service}
+#     ln -s {created directory path} {project home}/compose-files/
+
+# Anchor definition
 x-volumes: &volumes
   type: bind
   source: /bind mount source not specified  # ERROR MESSAGE
@@ -8,11 +14,14 @@ x-volumes: &volumes
 
 x-mysql: &mysql
   image: mysql
+  container_name: .container name not specified  # ERROR MESSAGE
   command: --default-authentication-plugin=mysql_native_password
   ports:
     - port mapping required  # ERROR MESSAGE
   volumes:
     - bind mount not configured  # ERROR MESSAGE
+  networks:
+    - mysql
   # restart: always
   environment:
     MYSQL_ROOT_PASSWORD: test
@@ -24,25 +33,39 @@ x-mariadb: &mariadb
   environment:
     MARIADB_ROOT_PASSWORD: test
 
-&image-name-x x-mysql-service:
+# Example services
+&image-name-n x-mysql-service:
   <<: *mysql
+  container_name: *image-name-n  # ERROR MESSAGE
   ports:
     - XXXX:3306
   volumes:
     - <<: *volumes
       source: /bind mount source not specified  # ERROR MESSAGE
 
-&image-name-y x-mariadb-service:
+&image-name-m x-mariadb-service:
   <<: *mariadb
+  container_name: *image-name-m  # ERROR MESSAGE
   ports:
     - XXXX:3306
   volumes:
     - <<: *volumes
       source: /bind mount source not specified  # ERROR MESSAGE
 
+# actual services
 services:
+  &image-name-0 test-mysql:
+    <<: *mysql
+    container_name: *image-name-0
+    ports:
+      - 3306:3306
+    volumes:
+      - <<: *volumes
+        source: *image-name-0
+
   &image-name-1 pymyrepl-mysql:
     <<: *mysql
+    container_name: *image-name-1
     ports:
       - 3307:3306
     volumes:
@@ -51,9 +74,12 @@ services:
 
   &image-name-2 pymyrepl-mariadb:
     <<: *mariadb
+    container_name: *image-name-2
     ports:
       - 3308:3306
     volumes:
       - <<: *volumes
         source: *image-name-2
 
+networks:
+    mysql:
